@@ -1,1 +1,1 @@
-# Seminario-de-Investigaci-n-I
+# Seminario-de-Investigacion-I
