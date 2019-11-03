@@ -1,0 +1,4 @@
+This Branch contains the algorithms for construct some figures of the book Guided Waves in Structures for SHM - the time-domain 
+spectral element method. First, the programs are produced and executed in Matlab 2019b - academic use, including graphics and
+clarifying coments in a small abstract. In a posterior stage, the same programs will be produced using PyCharm and executed using 
+Python.
