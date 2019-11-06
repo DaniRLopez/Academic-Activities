@@ -1,3 +1,3 @@
-# Seminario-de-Investigacion-I
+# Academic Activities - I
 
-En este repositorio se encuentran los códigos de programación elaborados por la estudiante Daniela Riaño Lopez para seminario de investigación I del Doctorado en Ingeniería - Ingeniería Civil.
+This repository contains open codes that replicate some graphs and tables of the books readed for the Academic Activities I and Academic Activities II. This codes are development both in Matlab (v2019) and Python 3.7.
