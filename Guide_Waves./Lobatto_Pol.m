@@ -11,7 +11,7 @@ Section : 2.1.1 Lobatto Polynomials
 
 Abstract
 This file contains the original form of Lobatto Polynomial of the nth order
-usign de Rodrigues's formula for to generate the polynomials. Also, in this
+usign the Rodrigues's formula for to generate the polynomials. Also, in this
 script are calculated the complete Lobatto Polynomial with their roots in
 the normalised coordinated system [-1,+1].
 
