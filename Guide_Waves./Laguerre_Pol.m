@@ -29,7 +29,7 @@ clear
 close all
 %% Loading the syms toolbox
 syms xi 
-%% Rodrigues's formula
+%% Laguerre Formula
 %  In this section is used the eq. 2.15 for to calculate the Laguerre
 %  Polynomial
 n  = 0:1:7;
