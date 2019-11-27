@@ -56,7 +56,7 @@ legend('n=0','n=1','n=2','n=3','n=4','n=5','Location','Best',...
 xlabel('$\xi$- coordinate','Interpreter','latex')
 ylabel('Chebyshev Polynomial $U_n(\xi)$','Interpreter','latex')
 grid on
-%% Complete Lobatto Polynomials
+%% Complete Chebyshev Polynomials
 %  This section replicates the table 2.4 with the roots of the eq. 2.13
 Tnc = sym(zeros(length(n),length(n)));
 fprintf('-Values of Chebyshev nodes in the normalised coordinate system-\n');
