@@ -6,123 +6,108 @@ Authors : Wieslaw Ostachowicz; Pawel Kudela; Marek Krawczuk; Arkadiusz Zak
 Year    : 2012
 Matlab  : 2019
 
-Section : 1.4.3 Numerical solutions of Rayleigh-Lamb Frequency Equations
-
+Section : 1.4.3 Numerical Solution of Rayleigh–Lamb Frequency Equations
 
 Abstract
-This file contains the solutions of phase velocity dispersion curves for 
-symmetric modes presented in eq 1.91. For a shorter computation time
-some resctrictions are imposed in the proposed method.
+This file contains the solution of the eq. 1.92 for the term LHSS using the
+algorithm presented in pg. 27 that implements the bisection method for the
+solution of the eq. 1.91 for symmetric modes.
 
-Convergence criterion for the Bisection Method: 1e-7
-
-D.R. Lopez
-2019
-
+D.R Lopez
+2020
 
 %}
 
-%% 
+%% Cleaning the workspace
 clc
 clear
 close all
-
-%% Graphics settings
 hold on
-xlabel('Fequency parameter $f \cdot d  [MHz \cdot m]$','Interpreter','latex')
-ylabel('Phase velocity $C_p$','Interpreter','latex')
-ylim([0 10])
+%% Plotting the Phase velocity figure for symmetric modes
+error = 1e-10;                        % tolerance for the bisection method
+cs = 3.2e3;                           % shear wave velocity 
+cl = 6.3e3;                           % longitudinal wave velocity
+cp  = 1:100:10e3;                     % c points
+WD  = 2*pi()*[1e+0:1e+1:20e+3];       % frequency range
 
-cs = 3.2e3;                                  % shear wave velocity 
-cl = 6.3e3;                                  % longitudinal wave velocity
-c_sup  = 0.01:1:10e3;
+for u = 1:length(WD)
+wd = WD(u);
 
-frecd = 10e3*(0.0001:0.05:2.0);
-C = zeros(1,2);
-D = zeros(size(frecd,2),size(c_sup,2));
-
-%% LHS equation solution
-
-% in this section is solved the eq. 1.92 for antisymmetric modes using the
-% bisection method proposed in pg. 27. For a better computing time some 
-% restrictions are imposed.
-
-for x = 1:size(frecd,2)
-fd = frecd(x);
-wd = fd*pi();
-h = 1;
-u = 1;
-for y = 1:size(c_sup,2)
-   h  = 1; 
-   u  = 1;
-   c = c_sup(y);
- 
-while h == 1
-
-% Eq. 1.92 that represent the modified symbols p and q presented in eq.
+% Eq. 1.92 that represents the modified symbols p and q presented in eq.
 % 1.66
-qg = sqrt((1/cs^2)-(1/c^2));   
-pg = sqrt((1/cl^2)-(1/c^2));
 
+LHSS = zeros(length(cp),1);
+roots = [];
+g     = 1;
 % Eq. 1.92 for symmetric modes
-term1 = 4*pg*tan(pg*wd);
-term2 = ((qg^2-(1/c^2))^2)*(c^2);
-term3 = tan(qg*wd);
-LHS  = (term3/qg) + (term1/term2);
-
-   if c > 10e3
-       % D(x,y) = c;
-       break
-   end
-
-if u == 1
-    C(1) = c;
-    u = 2;
-    eas(1) = LHS;
-    c = c + c/1000;
-else
-    if sign(LHS) == sign(eas(1))
-        eas(1) = LHS;
-        C(1) = c;
-        c = c + c/1000;
-        C(2) = c;
-    else
-        % Bisection method in pg. 27
-        while abs(C(1)-C(2)) > 1e-7
-            if eas(1) < LHS
-                C(1) = C(1);
-                C(2) = (C(2)+C(1))/2;
-                c = C(2);
-            elseif eas(1) > LHS
-                C(2) = C(2);
-                C(1) = (C(2)+C(1))/2;
-                c = C(1);
-            end
-            
-            qg = sqrt((1/cs^2)-(1/c^2));
-            pg = sqrt((1/cl^2)-(1/c^2));
-
-            term1 = 4*pg*tan(pg*wd);
-            term2 = ((qg^2-(1/c^2))^2)*(c^2);
-            term3 = tan(qg*wd);
-            LHS  = (term3/qg) + (term1/term2);
-        
-        end
-        
-        if abs(C(1)-C(2))<1e-7
-            D(x,y) = C(2);
-            h = 2;
-        end
-
+for k = 1:length(cp)
+    c = cp(k);
+    qg = sqrt((1/cs^2)-(1/c^2));            %    eq. 1.93
+    pg = sqrt((1/cl^2)-(1/c^2));            %    eq. 1.93
+    % Eq. 1.92 for symmetric modes
+    term1 = tan(qg*wd)/qg;
+    term2 = 4*pg*tan(pg*wd);
+    term3 = ((qg^2-(1/c^2))^2)*(c^2);
+    LHSS(k)  = term1 + (term2/term3);       %    eq. 1.92
+    
+    if k ~= 1
+      if sign(LHSS(k)) ~= sign(LHSS(k-1))
+          %% Bisection method
+           a = cp(k-1);
+           b = cp(k);
+           tol = b-a;
+           while tol > error
+           % d is the new point that represents the possible root of the
+           % function, in this case,LHSS
+           d = (a+b)/2;
+           % function evaluated in the points a,b and d
+           qg1 = sqrt((1/cs^2)-(1/a^2));   
+           pg1 = sqrt((1/cl^2)-(1/a^2));
+           term11 = tan(qg1*wd)/qg1;
+            term21 = 4*pg1*tan(pg1*wd);
+           term31 = ((qg1^2-(1/a^2))^2)*(a^2);
+           f1  = term11 + (term21/term31);
+           
+           qg2 = sqrt((1/cs^2)-(1/b^2));   
+           pg2 = sqrt((1/cl^2)-(1/b^2));
+           term12 = tan(qg2*wd)/qg2;
+            term22 = 4*pg2*tan(pg2*wd);
+           term32 = ((qg2^2-(1/b^2))^2)*(b^2);
+           f2  = term12 + (term22/term32);
+           
+           qg3 = sqrt((1/cs^2)-(1/d^2));   
+           pg3 = sqrt((1/cl^2)-(1/d^2));
+           term13 = tan(qg3*wd)/qg3;
+            term23 = 4*pg3*tan(pg3*wd);
+           term33 = ((qg3^2-(1/d^2))^2)*(d^2);
+           f3  = term13 + (term23/term33);
+           % Criteria for bisection method
+               if sign(f1) == sign(f3)
+                   a = d;
+               else
+                   b = d;
+               end
+           % difference between new a and b
+           tol = b-a;
+           end
+           roots(g,:) = [wd,d];
+           g = g+1;
+      else
+          
+      end
     end
 end
-end
-
-end
+figure(1)
 hold on
-plot(fd*(ones(1,size(D,2)))/1000,D(x,:)/1000,'.b','MarkerSize',2)
+if length(roots()) > 0
+plot(roots(:,1)/(2*pi()),roots(:,2),'.b')
+end
 end
 
-%%
-return;
+grid on
+set(gca,'TickLabelInterpreter','latex')
+xlabel('Fequency parameter $f \cdot d [MHz \cdot m]$','Interpreter','latex')
+ylabel('Phase velocity $C_p$','Interpreter','latex')
 
+%% Bye!
+return
